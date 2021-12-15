@@ -34,8 +34,8 @@ class Company:
 
         acquired_company_names = ", ".join(list(map(lambda x:x.parent_node_data_item, parent_node.children)))
         self.trace_log.append(f"DETAIL:{company_name}")
-        self.trace_log(f"Acquired companies:{acquired_company_names}")
-        self.trace_log(f"No of companies acquired:{len(parent_node.children)}")
+        self.trace_log.append(f"Acquired companies:{acquired_company_names}")
+        self.trace_log.append(f"No of companies acquired:{len(parent_node.children)}")
 
 
 
@@ -49,7 +49,7 @@ class Company:
             raise COMPANY_DOESNT_EXIST(f""" company {parent_company} doesnt exist""")
         parent_node.children.append(acquired_company)
         self.all_comapny_names_cache.add(acquired_company)
-        self.trace_log(f"ACQUIRED SUCCESS:{parent_company} succesfully acquired {acquired_company}")
+        self.trace_log.append(f"ACQUIRED SUCCESS:{parent_company} succesfully acquired {acquired_company}")
 
     def release(self, company_tobe_released):
         """removes the node mentioned in the released_company"""
@@ -59,7 +59,7 @@ class Company:
         parent_node:GeneralTreeNode             = self.parent_comapny.find_company(company_tobe_released_node.parent_node_data_item)
 
         parent_node.remove_child(parent_node,company_tobe_released_node)
-        self.trace_log(f"RELEASED SUCCESS: released {company_tobe_released} successfully")
+        self.trace_log.append(f"RELEASED SUCCESS: released {company_tobe_released} successfully")
 
     def remove_child(parent:GeneralTreeNode,company_tobe_released_node:GeneralTreeNode):
         """

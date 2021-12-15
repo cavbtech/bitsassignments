@@ -66,7 +66,7 @@ def do_detail(company:Company, instruction:str):
     """
     instruction_split = instruction.split(" ")
     if (len(instruction_split) > 1):
-        company.detail(instruction[1].strip())
+        company.detail(instruction_split[1].strip())
     else:
         raise Exception(f"""Not a valid instruction for Detail operation {instruction}. 
         Expected instruction as <DETAIL ce> where ce is company name""")
@@ -101,21 +101,23 @@ def process_instructions(input_instructions:list)->list:
                 raise Exception("""The starting instruction must be create company instruction ex: "Company:abc"  
                 where abc is a company name""")
 
+        i += 1
         if instruction.upper().startswith(acquisition_instructions.COMPANY.name):
             create_company(instruction)
             j+=1
-        if instruction.upper().startswith(acquisition_instructions.ACQUIRED.name):
+
+        elif instruction.upper().startswith(acquisition_instructions.ACQUIRED.name):
             do_acquisition(company, instruction)
             j += 1
-        if instruction.upper().startswith(acquisition_instructions.RELEASE.name):
+        elif instruction.upper().startswith(acquisition_instructions.RELEASE.name):
             do_release(company,instruction)
             j += 1
-        if instruction.upper().startswith(acquisition_instructions.DETAIL.name):
+        elif instruction.upper().startswith(acquisition_instructions.DETAIL.name):
             do_detail(company,instruction)
             j += 1
         elif instruction.startswith("No of operations") == False:
             print(f"not a valid instruction {instruction}. Please check")
-        i+=1
+
     print(f"total instructions given={i} and processed instructions={j}")
     return company.trace_log
 
