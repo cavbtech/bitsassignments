@@ -5,6 +5,7 @@ class Test(TestCase):
     def test_process_instructions(self):
         list =["Company: ce","No of operations: 6","DETAIL ce","ACQUIRED:aviation BY:ce",
                "ACQUIRED:power BY:ce","DETAIL ce"]
-        process_instructions(list)
+        result = process_instructions(list)
+        print(f"result={result}")
 
 

@@ -31,7 +31,7 @@ class Company:
         parent_node: GeneralTreeNode = self.parent_comapny.find_company(company_name)
         if parent_node == None:
             raise COMPANY_DOESNT_EXIST(f""" company {company_name} doesnt exist""")
-
+        print(f"parent_node={parent_node.parent_node_data_item} and childern={parent_node.children}")
         acquired_company_names = ", ".join(list(map(lambda x:x.parent_node_data_item, parent_node.children)))
         self.trace_log.append(f"DETAIL:{company_name}")
         self.trace_log.append(f"Acquired companies:{acquired_company_names}")
@@ -47,7 +47,7 @@ class Company:
         parent_node:GeneralTreeNode = self.parent_comapny.find_company(parent_company)
         if parent_node == None:
             raise COMPANY_DOESNT_EXIST(f""" company {parent_company} doesnt exist""")
-        parent_node.children.append(acquired_company)
+        parent_node.children.append(GeneralTreeNode(acquired_company))
         self.all_comapny_names_cache.add(acquired_company)
         self.trace_log.append(f"ACQUIRED SUCCESS:{parent_company} succesfully acquired {acquired_company}")
 

@@ -11,16 +11,20 @@ class GeneralTreeNode:
         self.parent_node_data_item      = parent_node_data_item
         self.children                   = []
 
+
+
     def find_company(self,company_name:str):
         """
         find_company recursively finds the comany name
         :param company_name:
         :return:
         """
+        print(f"x={company_name} and self.parent_node_data_item={self.parent_node_data_item}")
         if(company_name==self.parent_node_data_item):
             return self
         for x in self.children:
             if x.parent_node_data_item == company_name:
+                print(f"x={x} and x.parent_node_data_item={x.parent_node_data_item}")
                 return x
             self.find_company(x.parent_node_data_item)
 
