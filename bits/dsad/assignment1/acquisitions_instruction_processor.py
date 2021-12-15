@@ -36,6 +36,9 @@ def do_acquisition(company:Company, instruction:str):
 
     try:
         company.acquire(company_acquired_by.strip(),company_acquired.strip())
+    except COMPANY_ALREADY_EXIST as e:
+        print(e)
+
     except Exception as e:
         raise e
 
@@ -50,7 +53,10 @@ def do_release(company:Company, instruction:str):
     """
     instruction_split = instruction.split(" ")
     if(len(instruction_split)>1):
-        company.release(instruction[1].strip())
+        try:
+            company.release(instruction_split[1].strip())
+        except COMPANY_DOESNT_EXIST as e:
+            print(e)
     else:
         raise Exception(f"""Not a valid release instuction {instruction}. 
         Expected instruction as <RELEASE additive> where additive is company name""")
@@ -66,7 +72,10 @@ def do_detail(company:Company, instruction:str):
     """
     instruction_split = instruction.split(" ")
     if (len(instruction_split) > 1):
-        company.detail(instruction_split[1].strip())
+        try:
+            company.detail(instruction_split[1].strip())
+        except COMPANY_DOESNT_EXIST as e:
+            print(e)
     else:
         raise Exception(f"""Not a valid instruction for Detail operation {instruction}. 
         Expected instruction as <DETAIL ce> where ce is company name""")
