@@ -19,12 +19,12 @@ class GeneralTreeNode:
         :param company_name:
         :return:
         """
-        print(f"x={company_name} and self.parent_node_data_item={self.parent_node_data_item}")
+        # print(f"x={company_name} and self.parent_node_data_item={self.parent_node_data_item}")
         if(company_name==self.parent_node_data_item):
             return self
         for x in self.children:
             if x.parent_node_data_item == company_name:
-                print(f"x={x} and x.parent_node_data_item={x.parent_node_data_item}")
+                # print(f"x={x} and x.parent_node_data_item={x.parent_node_data_item}")
                 return x
             return  self.find_company(x.parent_node_data_item)
 
