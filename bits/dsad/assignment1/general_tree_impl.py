@@ -26,7 +26,7 @@ class GeneralTreeNode:
             if x.parent_node_data_item == company_name:
                 print(f"x={x} and x.parent_node_data_item={x.parent_node_data_item}")
                 return x
-            self.find_company(x.parent_node_data_item)
+            return  self.find_company(x.parent_node_data_item)
 
 
     def tree_traverse(self,root):
@@ -46,9 +46,9 @@ class GeneralTreeNode:
                 # Dequeue an item from queue and print it
                 p = q[0]
                 q.pop(0);
-                print(p.key, end=' ')
+                print(p.parent_node_data_item, end=' ')
                 # Enqueue all children of the dequeued item
-                for i in range(len(p.child)):
-                    q.append(p.child[i]);
+                for i in range(len(p.children)):
+                    q.append(p.children[i]);
                 n -= 1
             print()  # Print new line between two levels
