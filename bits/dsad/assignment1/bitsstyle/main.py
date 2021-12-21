@@ -14,21 +14,20 @@ class GeneralTreeNode:
         self.children                   = []
 
 
-
-    def find_company(self,company_name:str):
+    def find_company(self, company_name: str):
         """
         find_company recursively finds the comany name
         :param company_name:
         :return:
         """
         # print(f"x={company_name} and self.parent_node_data_item={self.parent_node_data_item}")
-        if(company_name==self.parent_node_data_item):
+        if (company_name == self.parent_node_data_item):
             return self
-        for x in self.children:
-            if x.parent_node_data_item == company_name:
-                # print(f"x={x} and x.parent_node_data_item={x.parent_node_data_item}")
-                return x
-            return  self.find_company(x.parent_node_data_item)
+        if self.children:
+            for child in self.children:
+                if child.parent_node_data_item == company_name:
+                    return child
+                child.find_company(company_name)
 
 
     def tree_traverse(self,root):
@@ -54,42 +53,6 @@ class GeneralTreeNode:
                     q.append(p.children[i]);
                 n -= 1
             print()  # Print new line between two levels
-
-
-## This module reads and writes the files ##
-
-def read_from_file(input_file_name: str) -> list:
-    """
-    This funtion reads the file contents adds to a list and returns the list.  Each item in a list is considered as
-    a line
-    It throws File not found exception if the file doesnt exist
-    :param input_file_name:
-    :return:
-    """
-
-    try:
-        with open(input_file_name, "r") as in_file:
-            lines = in_file.readlines()
-    except IOError as io:
-        print(f"Exception while opening the file {input_file_name}")
-        raise io
-
-    return lines
-
-def write_to_file(output_file_name:str, output_lines:list):
-    """
-    This function reads all the lies from the list and writes to a file
-    Throws an exception if the file doesnt exist
-    :param output_file_name:
-    :param output_lines:
-    :return:
-    """
-    try:
-        with open(output_file_name, "w") as output_file:
-            output_file.writelines(output_lines)
-    except IOError as io:
-        print(f"Exception while opening the file {output_file_name}")
-        raise io
 
 class COMPANY_ALREADY_EXIST(Exception):
     def __init__(self, message):
@@ -193,21 +156,15 @@ class Company:
         if(existFlag):
             parent.children.pop(i)
 
-
 """
 acquisitions instructor interpreter reads the list of acquisition, release and detail instructions given in the file
 """
-
-
-
-
 class acquisition_instructions(enum.Enum):
     COMPANY  = 0
     DETAIL = 1
     ACQUIRED = 2
     RELEASE = 3
     BY = 4
-
 
 def do_acquisition(company:Company, instruction:str):
     """
@@ -235,8 +192,6 @@ def do_acquisition(company:Company, instruction:str):
     except Exception as e:
         raise e
 
-
-
 def do_release(company:Company, instruction:str):
     """
     Release a company instruction should be in the following format "RELEASE additive"
@@ -253,8 +208,6 @@ def do_release(company:Company, instruction:str):
     else:
         raise Exception(f"""Not a valid release instuction {instruction}. 
         Expected instruction as <RELEASE additive> where additive is company name""")
-
-
 
 def do_detail(company:Company, instruction:str):
     """
@@ -287,7 +240,6 @@ def create_company(instruction:str):
         company                   = Company(instruction_split[1].strip())
     else:
         raise Exception(f"Not a valid instruction to open a company {instruction}")
-
 
 def process_instructions(input_instructions:list)->list:
     """
@@ -323,10 +275,46 @@ def process_instructions(input_instructions:list)->list:
     print(f"total instructions given={i} and processed instructions={j}")
     return company.trace_log
 
+## This module reads and writes the files ##
+
+def read_from_file(input_file_name: str) -> list:
+    """
+    This funtion reads the file contents adds to a list and returns the list.  Each item in a list is considered as
+    a line
+    It throws File not found exception if the file doesnt exist
+    :param input_file_name:
+    :return:
+    """
+
+    try:
+        with open(input_file_name, "r") as in_file:
+            lines = in_file.readlines()
+    except IOError as io:
+        print(f"Exception while opening the file {input_file_name}")
+        raise io
+
+    return lines
+
+def write_to_file(output_file_name:str, output_lines:list):
+    """
+    This function reads all the lies from the list and writes to a file
+    Throws an exception if the file doesnt exist
+    :param output_file_name:
+    :param output_lines:
+    :return:
+    """
+    try:
+        with open(output_file_name, "w") as output_file:
+            for outline in output_lines:
+                output_file.write(outline+'\n')
+    except IOError as io:
+        print(f"Exception while opening the file {output_file_name}")
+        raise io
+
 if __name__ == '__main__':
-    input_instructions   = read_from_file("")
+    input_instructions   = read_from_file("./inputPS5.txt")
     trace_logs_list      = process_instructions(input_instructions)
-    write_to_file(trace_logs_list)
+    write_to_file('./outputPS5.txt',trace_logs_list)
 
 
 
