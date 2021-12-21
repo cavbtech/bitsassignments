@@ -1,0 +1,35 @@
+DETAIL:ce
+Acquired companies:None
+No of companies acquired:0
+ACQUIRED SUCCESS:ce succesfully acquired aviation
+ACQUIRED SUCCESS:ce succesfully acquired power
+ACQUIRED SUCCESS:ce succesfully acquired healthcare
+DETAIL:ce
+Acquired companies:aviation, power, healthcare
+No of companies acquired:3
+ACQUIRED SUCCESS:aviation succesfully acquired additive
+ACQUIRED FAILED: additive BY: aviation
+DETAIL:aviation
+Acquired companies:additive
+No of companies acquired:1
+RELEASED FAILED: released additive failed
+RELEASED FAILED: released additive failed
+ACQUIRED FAILED: additive BY: aviation
+ACQUIRED SUCCESS:power succesfully acquired wind-energy
+ACQUIRED SUCCESS:power succesfully acquired solar-energy
+ACQUIRED SUCCESS:power succesfully acquired appliances
+ACQUIRED SUCCESS:healthcare succesfully acquired ct-manufacturer
+ACQUIRED SUCCESS:healthcare succesfully acquired lifescience
+ACQUIRED SUCCESS:healthcare succesfully acquired pharma
+DETAIL:ce
+Acquired companies:aviation, power, healthcare
+No of companies acquired:3
+DETAIL:aviation
+Acquired companies:additive
+No of companies acquired:1
+DETAIL:power
+Acquired companies:wind-energy, solar-energy, appliances
+No of companies acquired:3
+DETAIL:lifescience
+Acquired companies:None
+No of companies acquired:0
