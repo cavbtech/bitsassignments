@@ -12,9 +12,9 @@ ACQUIRED FAILED: additive BY: aviation
 DETAIL:aviation
 Acquired companies:additive
 No of companies acquired:1
+RELEASED SUCCESS: released additive successfully
 RELEASED FAILED: released additive failed
-RELEASED FAILED: released additive failed
-ACQUIRED FAILED: additive BY: aviation
+ACQUIRED SUCCESS:aviation succesfully acquired additive
 ACQUIRED SUCCESS:power succesfully acquired wind-energy
 ACQUIRED SUCCESS:power succesfully acquired solar-energy
 ACQUIRED SUCCESS:power succesfully acquired appliances
@@ -25,8 +25,8 @@ DETAIL:ce
 Acquired companies:aviation, power, healthcare
 No of companies acquired:3
 DETAIL:aviation
-Acquired companies:additive
-No of companies acquired:1
+Acquired companies:additive, additive
+No of companies acquired:2
 DETAIL:power
 Acquired companies:wind-energy, solar-energy, appliances
 No of companies acquired:3

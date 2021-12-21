@@ -14,21 +14,52 @@ class GeneralTreeNode:
         self.children                   = []
 
 
-    def find_company(self, company_name: str):
+    # def find_company_recursively(self, company_name: str):
+    #     """
+    #     find_company recursively finds the comany name
+    #     :param company_name:
+    #     :return:
+    #     """
+    #     # print(f"x={company_name} and self.parent_node_data_item={self.parent_node_data_item}")
+    #     if (company_name == self.parent_node_data_item):
+    #         return self
+    #     if self.children:
+    #         for child in self.children:
+    #             if child.parent_node_data_item == company_name:
+    #                 return child
+    #             child.find_company_recursively(company_name)
+
+    def find_company(self,company_name,root):
         """
-        find_company recursively finds the comany name
-        :param company_name:
+        This method follows level order traversal to search the company name
+
+        :param company_name: company name to be searched
+        :param root: root company node
         :return:
         """
-        # print(f"x={company_name} and self.parent_node_data_item={self.parent_node_data_item}")
-        if (company_name == self.parent_node_data_item):
-            return self
-        if self.children:
-            for child in self.children:
-                if child.parent_node_data_item == company_name:
-                    return child
-                child.find_company(company_name)
 
+        if (root == None):
+            return None;
+
+        q = []  # Create a queue
+        q.append(root);  # Enqueue root
+        while (len(q) != 0):
+            n = len(q);
+            # If this node has children
+            while (n > 0):
+                # Dequeue an item from queue and print it
+                p = q[0]
+                q.pop(0);
+                if(p.parent_node_data_item==company_name):
+                    return p;
+                # Enqueue all children of the dequeued item
+                for i in range(len(p.children)):
+                    if (p.children[i].parent_node_data_item == company_name):
+                        return p.children[i];
+                    q.append(p.children[i]);
+            n -= 1
+            print()  # Print new line between two levels
+            return None
 
     def tree_traverse(self,root):
         """ This method follows level order traversal code
@@ -85,7 +116,7 @@ class Company:
         if company_name == None:
             raise COMPANY_NAME_CANNOT_BE_NONE
 
-        parent_node: GeneralTreeNode = self.parent_comapny.find_company(company_name)
+        parent_node: GeneralTreeNode = self.parent_comapny.find_company(company_name,self.parent_comapny)
         if parent_node == None:
             self.trace_log.append(f"DETAIL:{company_name}")
             self.trace_log.append(f"Acquired companies:None")
@@ -109,7 +140,7 @@ class Company:
         if acquired_company in self.all_comapny_names_cache:
             self.trace_log.append(f"""ACQUIRED FAILED: {acquired_company} BY: {parent_company}""")
             raise COMPANY_ALREADY_EXIST(f"""company {acquired_company} already acquired""")
-        parent_node:GeneralTreeNode = self.parent_comapny.find_company(parent_company)
+        parent_node: GeneralTreeNode = self.parent_comapny.find_company(parent_company,self.parent_comapny)
         if parent_node == None:
             self.trace_log.append(f"""ACQUIRED FAILED: {acquired_company} BY: {parent_company}""")
             raise COMPANY_DOESNT_EXIST(f"""company {parent_company} doesnt exist""")
@@ -125,11 +156,11 @@ class Company:
             raise COMPANY_DOESNT_EXIST(f"""company {company_tobe_released} doesnt exist""")
             return
 
-        company_tobe_released_node:GeneralTreeNode = self.parent_comapny.find_company(company_tobe_released)
+        company_tobe_released_node: GeneralTreeNode = self.parent_comapny.find_company(company_tobe_released, self.parent_comapny)
         if company_tobe_released_node == None:
             self.trace_log.append(f"""RELEASED FAILED: released {company_tobe_released} failed""")
             raise COMPANY_DOESNT_EXIST(f"""company {company_tobe_released} doesnt exist""")
-        parent_node:GeneralTreeNode             = self.parent_comapny.find_company(company_tobe_released_node.parent_node_data_item)
+        parent_node:GeneralTreeNode             = self.parent_comapny.find_company(company_tobe_released_node.parent_node_data_item,self.parent_comapny)
 
         self.remove_child(parent_node,company_tobe_released)
         #print(f"self.all_comapny_names_cache={self.all_comapny_names_cache}")
