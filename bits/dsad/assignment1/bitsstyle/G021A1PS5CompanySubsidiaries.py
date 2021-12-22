@@ -151,7 +151,7 @@ class Company:
             raise COMPANY_DOESNT_EXIST(f"""company {parent_company} doesnt exist""")
         parent_node.addChildren(GeneralTreeNode(acquired_company))
         self.all_comapny_names_cache.add(acquired_company)
-        self.trace_log.append(f"ACQUIRED SUCCESS:{parent_company} succesfully acquired {acquired_company}")
+        self.trace_log.append(f"ACQUIRED SUCCESS:{parent_company} Successfully acquired {acquired_company}")
 
     def release(self, company_tobe_released):
         """removes the node mentioned in the released_company"""
@@ -261,6 +261,21 @@ def do_detail(company:Company, instruction:str):
         raise Exception(f"""Not a valid instruction for Detail operation {instruction}. 
         Expected instruction as <DETAIL ce> where ce is company name""")
 
+
+def operation_count(instruction:str):
+    """
+
+    """
+    instruction_split = instruction.split(":")
+    if (len(instruction_split) > 1):
+        try:
+            return int(instruction_split[1].strip())
+        except COMPANY_DOESNT_EXIST as e:
+            print(e)
+    else:
+        raise Exception(f"""Not a valid instruction for No of operations {instruction}. 
+        Expected instruction as <DETAIL ce> where ce is company name""")
+
 def create_company(instruction:str):
     """
     It is expected that only one parent company is getting created per file and the instruction should be in
@@ -293,7 +308,6 @@ def process_instructions(input_instructions:list)->list:
         i += 1
         if instruction.upper().startswith(acquisition_instructions.COMPANY.name):
             create_company(instruction)
-            j+=1
 
         elif instruction.upper().startswith(acquisition_instructions.ACQUIRED.name):
             do_acquisition(company, instruction)
@@ -304,10 +318,13 @@ def process_instructions(input_instructions:list)->list:
         elif instruction.upper().startswith(acquisition_instructions.DETAIL.name):
             do_detail(company,instruction)
             j += 1
-        elif instruction.startswith("No of operations") == False:
+        elif instruction.startswith("No of operations"):
+            operation_count_val = operation_count(instruction)
             print(f"not a valid instruction {instruction}. Please check")
 
-    print(f"total instructions given={i} and processed instructions={j}")
+    print(f"total No of operations is ={operation_count_val} and total count of operations in given file is={j}")
+    if operation_count_val != j:
+        raise Exception("Not Valid Input file. No of operations count not matching with number of operations in the file")
     return company.trace_log
 
 ## This module reads and writes the files ##
