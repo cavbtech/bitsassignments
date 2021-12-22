@@ -25,8 +25,8 @@ DETAIL:ce
 Acquired companies:aviation, power, healthcare
 No of companies acquired:3
 DETAIL:aviation
-Acquired companies:additive, additive
-No of companies acquired:2
+Acquired companies:additive
+No of companies acquired:1
 DETAIL:power
 Acquired companies:wind-energy, solar-energy, appliances
 No of companies acquired:3
