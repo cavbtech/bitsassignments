@@ -49,8 +49,11 @@ class GeneralTreeNode:
             # If this node has children
             while (n > 0):
                 # Dequeue an item from queue and print it
+                if(len(q) == 0):
+                    return None
                 p = q[0]
                 q.pop(0);
+
                 if(p.parent_node_data_item==company_name):
                     return p;
                 # Enqueue all children of the dequeued item
