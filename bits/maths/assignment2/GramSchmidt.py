@@ -72,16 +72,19 @@ class GramSchmidt:
         print(f" what is A[:, 0] = {A[:, 0]}")
         print(f" what is Q[:, 0] = {Q[:, 0]}")
         print(f" what is np.linalg.norm(u[:, 0]) = {np.linalg.norm(u[:, 0])}")
-        for i in range(1, n-1):
+        for i in range(1, m):
             u[:, i] = A[:, i]
+            print(f"i={i} and A[:, i]={A[:, i]}  and u[:, i]={u[:, i]}")
             for j in range(i):
                 print(f" what is u[:, i] = {u[:, i]}")
                 print(f" what is A[:, i] = {A[:, i]}")
+
                 print(f" what is Q[:, j] = {Q[:, j]}")
                 print(f" what is (A[:, i] @ Q[:, j]) = {(A[:, i] @ Q[:, j])}")
                 print(f" what is (A[:, i] @ Q[:, j]) * Q[:, j] = {(A[:, i] @ Q[:, j]) * Q[:, j]}")
                 u[:, i] -= (A[:, i] @ Q[:, j]) * Q[:, j]  # get each u vector
                 print(f" after what is u[:, i] = {u[:, i]}")
+
 
             Q[:, i] = u[:, i] / np.linalg.norm(u[:, i])  # compute each e vetor
             self.normOperationsCount(u[:, 0])
@@ -126,17 +129,17 @@ class GramSchmidt:
         self.additions = 0
         self.multiplactions = 0
         self.divisions = 0
-    def __init__(self,matrix_a):
-        self.m = len(matrix_a)
-        self.n = len(matrix_a[0])
-        if self.m <= self.n:
-            raise  RuntimeError(f"rows {self.m} must be greater than columns {self.n}")
-        self.matrix = np.array(matrix_a)
-        self.fnom   = np.linalg.norm(self.matrix)
-        self.rank   = np.linalg.matrix_rank(self.matrix)
-        self.additions = 0
-        self.multiplactions = 0
-        self.divisions = 0
+    # def __init__(self,matrix_a):
+    #     self.m = len(matrix_a)
+    #     self.n = len(matrix_a[0])
+    #     if self.m <= self.n:
+    #         raise  RuntimeError(f"rows {self.m} must be greater than columns {self.n}")
+    #     self.matrix = np.array(matrix_a)
+    #     self.fnom   = np.linalg.norm(self.matrix)
+    #     self.rank   = np.linalg.matrix_rank(self.matrix)
+    #     self.additions = 0
+    #     self.multiplactions = 0
+    #     self.divisions = 0
 
 def inputValidator(value):
     try:
@@ -152,8 +155,8 @@ def inputValidator(value):
 if __name__ == '__main__':
     rows       = inputValidator(input("please enter number of rows of a Matrix. It accepts only integer >0"))
     columns    = inputValidator(input("please enter number of columns of a Matrix. It accepts only integer >0"))
-    #gramSchidt = GramSchmidt(rows,columns)
-    gramSchidt = GramSchmidt([[2.0,3.0],[4.0,3.0],[2.0,8.0]])
+    gramSchidt = GramSchmidt(rows,columns)
+    #gramSchidt = GramSchmidt([[2.0,3.0],[4.0,3.0],[2.0,8.0]])
     print("---------------------------Fnorm-----------------------------------")
     print(f"matrix={gramSchidt.matrix}")
     print(f"Given matrix is {rows} X {columns} matrix and its Fnorm = {gramSchidt.fnom}")
