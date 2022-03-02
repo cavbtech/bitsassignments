@@ -606,6 +606,26 @@ def inputValidator(value):
             raise RuntimeError(f" {val }That's not a positve integer. Please enter positve integer")
     return val
 
+
+def total_operation_count(m,n):
+    addition_Q = ((n * (m - 1) * m) / 2) + (n - 1) * m
+    division_Q = m * n
+    multiplication_Q = n * m ** 2
+    total_operation_Q = addition_Q + division_Q + multiplication_Q
+    print("\nTotal Number of Addition_Q: {}\n".format(int(addition_Q)))
+    print("\nTotal Number of division_Q: {}\n".format(int(division_Q)))
+    print("\nTotal Number of multiplication_Q: {}\n".format(int(multiplication_Q)))
+
+    addition_R = (m * (m + 1) * (n - 1)) / 2
+    multiplcation_R = (m * (m + 1) * n) / 2
+    total_operation_R = addition_R + multiplcation_R
+    print("\nTotal Number of addition_R: {}\n".format(int(addition_R)))
+    print("\nTotal Number of multiplcation_R: {}\n".format(int(multiplcation_R)))
+
+    total_operation = total_operation_Q + total_operation_R
+    print("\nTotal Number of Addition, Division, Multiplication for Q & R are : {}\n".format(int(total_operation)))
+
+
 ## Driver
 if __name__ == '__main__':
     rows       = inputValidator(input("please enter number of rows of a Matrix. It accepts only integer >0"))
@@ -645,3 +665,10 @@ if __name__ == '__main__':
     print(f"Total number of additions ={g_additions}")
     print(f"Total number of multiplications ={g_multiplications}")
     print(f"Total number of divisions={g_divisions}")
+
+
+
+    #--- operation Count
+    import numpy as np
+    m, n = np.array(matrix).shape
+    total_operation_count(m, n)
