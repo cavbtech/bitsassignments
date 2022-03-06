@@ -14,6 +14,7 @@ class UsesCase:
         self.use_case_name  = use_case_name
         self.tasks          = []
         self.dailyBonus     = []
+        self.pickuptasks    = []
 
     def __str__(self) -> str:
         return f"use_case_name={self.use_case_name} , tasks={self.tasks} dailyBonus={self.dailyBonus}"
@@ -33,15 +34,16 @@ class UsesCase:
         ## create an array which store the bonus that we will get each day
         ## self.dailyBonus holds the total bonus for a usecase
         self.dailyBonus = [0]*(self.findMaxDeadlinedTask()+1)
-        ## order the tasks by bonus
-        self.tasks.sort(key=lambda task: (task.bonus,task.deadline), reverse=True)
+        ## order the tasks by bonus /  deadline
+        self.tasks.sort(key=lambda task: (task.bonus/task.deadline), reverse=True)
         for task in self.tasks:
-            #check for the availability of student
             i = task.deadline
             while i > 0:
                 if self.dailyBonus[i] == 0:
                     #assign the bonus
                     self.dailyBonus[i] = task.bonus
+                    print(f"use_case_name = {self.use_case_name} i={i} and task = ${task}")
+                    self.pickuptasks.append(task)
                     break
                 else:
                     i -=1
@@ -60,14 +62,22 @@ def createUseCase(usecase_counter, deadlines, bonusvalues):
     bonusValues     = bonusvalues.split()
     if(len(deadlinesValues)!=len(bonusValues)):
         raise RuntimeError(f""" Please make sure pass same number of deadlines and bonus elements. 
-                                Deadline elements counts is {len(deadlinesValues)}ma{len(bonusValues)}""")
+                                Deadline elements count is {len(deadlinesValues)} 
+                                and bonus elments count is {len(bonusValues)}""")
 
     usecase = UsesCase(f"""Usecase:{usecase_counter}""")
     for i in range(0,len(deadlinesValues)):
         ##TODO:Handle errors for other datatype. It should only accept integers
-        deadline            = int(deadlinesValues[i].strip())
-        bonusvalues         = int(bonusValues[i].strip())
-        task                = Task(f"""Task:{i+1}""", deadline, bonusvalues)
+        deadline    =0
+        bonus       =0
+        try:
+            deadline           = int(deadlinesValues[i].strip())
+            bonus              = int(bonusValues[i].strip())
+            if deadline < 0 or bonus < 0:
+                raise ValueError
+        except ValueError:
+            raise RuntimeError(f" values deadline {deadlinesValues[i]} and bonus {bonusValues[i]} must be postive integers ")
+        task                = Task(f"""Task:{i+1}""", deadline, bonus)
         usecase.tasks.append(task)
 
     return usecase
@@ -125,7 +135,6 @@ def readFile(fileName):
 def writeToFile(list_use_cases, output_file):
     initialString       = ""
     resultCaseString    = ""
-    orderString         = ""
     taskOrderString     = ""
     for usecase in list_use_cases:
         initialString = initialString + f"{sum(usecase.dailyBonus)} \n"
@@ -133,7 +142,7 @@ def writeToFile(list_use_cases, output_file):
             f"For the use case {usecase.use_case_name}, " \
             f" the maximum bonus earned is {sum(usecase.dailyBonus)}"
 
-        orderString = "-->".join(list(map(lambda task: task.name, usecase.tasks)))
+        orderString = "-->".join(list(map(lambda task: task.name, usecase.pickuptasks)))
         taskOrderString = taskOrderString + "\n" + \
                            f"For the use case {usecase.use_case_name}, " \
                            f" the tasks were scheduled in {orderString}"
@@ -147,5 +156,5 @@ def writeToFile(list_use_cases, output_file):
     file.close()
 
 if __name__ == '__main__':
-    list_use_cases = readFile("inputPS52.txt")
-    writeToFile(list_use_cases,"output2.txt")
+    list_use_cases = readFile("inputPS5.txt")
+    writeToFile(list_use_cases,"output.txt")
