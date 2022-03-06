@@ -1,7 +1,4 @@
 import math
-
-
-
 class Polymomial:
 
     def zeroReplace(self,replaceDigit:str):

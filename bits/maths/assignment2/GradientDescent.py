@@ -365,5 +365,11 @@ if __name__ == '__main__':
     print(" find the gradient descent ")
     gd             = GradientDescent(matrix)
     data = gd.make_iterations()
+    file1 = open("xk.txt", "w")
+    file2 = open("f-xk.txt", "w")
 
+    file1.write(str(data[0]))
+    file2.write(str(data[1]))
+    file1.close()
+    file2.close()
     create_plot(data[1])
