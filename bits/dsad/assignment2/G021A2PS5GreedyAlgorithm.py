@@ -93,11 +93,11 @@ def readFile(fileName):
     deadlines        = ""
     usecase_counter  = 0
     for lineraw in file:
-        ## assuming the entered data prefixed with descriptioni
+        ## assuming the entered data prefixed with discription
         # i.e "No of use-cases: 2" ... the program needs only the value
         ## if the input doesnt have the description then pick only the value
-        if(lineraw.index(":") >0 ):
-            line = slineraw.split(":")[1]
+        if(lineraw.find(":") >0 ):
+            line = lineraw.split(":")[1]
         else:
             line = lineraw
 
@@ -147,5 +147,5 @@ def writeToFile(list_use_cases, output_file):
     file.close()
 
 if __name__ == '__main__':
-    list_use_cases = readFile("inputPS5.txt")
-    writeToFile(list_use_cases,"output1.txt")
+    list_use_cases = readFile("inputPS52.txt")
+    writeToFile(list_use_cases,"output2.txt")
