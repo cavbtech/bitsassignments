@@ -243,6 +243,9 @@ def readFile(fileName):
         else:
             line = lineraw.strip()
 
+        if(line==""):
+            continue
+
         #Ignore the first line
         if lineCounter == 0:
             if(line.isnumeric() and int(line)>0):
