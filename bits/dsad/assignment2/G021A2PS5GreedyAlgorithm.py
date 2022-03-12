@@ -233,17 +233,23 @@ def readFile(fileName):
     list_use_cases    = []
     deadlines        = ""
     usecase_counter  = 0
+    expected_usecases= 0
     for lineraw in file:
         ## assuming the entered data prefixed with discription
         # i.e "No of use-cases: 2" ... the program needs only the value
         ## if the input doesnt have the description then pick only the value
         if(lineraw.find(":") >0 ):
-            line = lineraw.split(":")[1]
+            line = (lineraw.split(":")[1]).strip()
         else:
-            line = lineraw
+            line = lineraw.strip()
 
         #Ignore the first line
         if lineCounter == 0:
+            if(line.isnumeric() and int(line)>0):
+                expected_usecases = int(line)
+            else:
+                error_str = f"No of use-cases must be an integer.  Given {lineraw}"
+                raise RuntimeError(error_str)
             lineCounter +=1
             continue
         # This is for deadlines
@@ -260,6 +266,8 @@ def readFile(fileName):
         lineCounter += 1
 
     file.close()
+    if(len(list_use_cases) != expected_usecases):
+        raise RuntimeError(f" Expected number of usecases are {expected_usecases} but actual are {len(list_use_cases)}")
     # return the usecases
     return list_use_cases
 
