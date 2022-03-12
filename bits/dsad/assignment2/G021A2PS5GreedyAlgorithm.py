@@ -1,131 +1,70 @@
 class TaskHeapQueue:
+    """
+    A simple implementation of priority queue
+    Can be implemented as static methods but this is better way of code separation
+    """
+    def shiftUp(self, heap, pos):
+        """
+        Traverse through smaller child till the last leaf node and compare the values
+        It is called while deleting any element and it internally calls shiftDown
+        :param heap:
+        :param pos:
+        :return:
+        """
+        endpos = len(heap)
+        startpos = pos
+        newitem = heap[pos]
+        childpos = 2 * pos + 1  # leftmost child position
+        while childpos < endpos:
+            # Set childpos to index of smaller child.
+            rightpos = childpos + 1
+            if rightpos < endpos and not heap[childpos] < heap[rightpos]:
+                childpos = rightpos
+            # Move the smaller child up.
+            heap[pos] = heap[childpos]
+            pos = childpos
+            childpos = 2 * pos + 1
+        heap[pos] = newitem
+        self.shiftDown(heap, startpos, pos)
 
-    def __init__(self):
-        self.H      = []
-        self.size   = -1
+    def shiftDown(self, heap, startpos, pos):
+        """
+        It is called while adding any element within the heap
+        It is heapify algorithm where the parent node is compared to each child node till the last
+        leaf node and swap the elements based on the priority
+        :param heap:
+        :param startpos:
+        :param pos:
+        :return:
+        """
+        newitem = heap[pos]
 
-    # Function to return the index of the
-    # parent node of a given node
-    def parent(self,i):
-        return (i - 1) // 2
+        while pos > startpos:
+            parentpos = (pos - 1) >> 1
+            parent = heap[parentpos]
+            if newitem < parent:
+                heap[pos] = parent
+                pos = parentpos
+                continue
+            break
+        heap[pos] = newitem
 
+    def insert(self, heap, item):
+        """Insert an element onto heap"""
+        heap.append(item)
+        self.shiftDown(heap, 0, len(heap) - 1)
 
-    # Function to return the index of the
-    # left child of the given node
-    def leftChild(self,i):
-        return ((2 * i) + 1)
-
-
-    # Function to return the index of the
-    # right child of the given node
-    def rightChild(self,i):
-        return ((2 * i) + 2)
-
-
-    # Function to shift up the
-    # node in order to maintain
-    # the heap property
-    def shiftUp(self,i):
-        while (i > 0 and self.H[self.parent(i)][0] < self.H[i][0]):
-            # Swap parent and current node
-            self.swap(self.parent(i), i)
-
-            # Update i to parent of i
-            i = self.parent(i)
-
-
-    # Function to shift down the node in
-    # order to maintain the heap property
-    def shiftDown(self,i):
-        maxIndex = i
-
-        # Left Child
-        l = self.leftChild(i)
-
-        if (l <= self.size and self.H[l][0] > self.H[maxIndex][0]):
-            maxIndex = l
-
-        # Right Child
-        r = self.rightChild(i)
-
-        if (r <= self.size and self.H[r][0] > self.H[maxIndex][0]):
-            maxIndex = r
-
-        # If i not same as maxIndex
-        if (i != maxIndex):
-            self.swap(i, maxIndex)
-            self.shiftDown(maxIndex)
-
-
-    # Function to insert a
-    # new element in
-    # the Binary Heap
-    def insert(self,p):
-        self.size = self.size + 1
-        self.H.append(p)
-
-        # Shift Up to maintain
-        # heap property
-        self.shiftUp(self.size)
-        print(f"self.H=${self.H}")
+    def removeMin(self, heap):
+        """Remove the smallest element off the heap"""
+        poppedItem = heap.pop()
+        if heap:
+            returnitem = heap[0]
+            heap[0] = poppedItem
+            self.shiftUp(heap, 0)
+            return returnitem
+        return poppedItem
 
 
-    # Function to extract
-    # the element with
-    # maximum priority
-    def extractMax(self):
-        result = self.H[0]
-
-        # Replace the value
-        # at the root with
-        # the last leaf
-        self.H[0] = self.H[self.size]
-        self.size = self.size - 1
-
-        # Shift down the replaced
-        # element to maintain the
-        # heap property
-        self.shiftDown(0)
-        return result
-
-
-    # Function to change the priority
-    # of an element
-    def changePriority(self,i, p):
-        oldp = self.H[i]
-        y    = list(self.H[i])
-        y[0] = p
-        self.H[i] = tuple(y)
-
-        if (p > oldp[0]):
-            self.shiftUp(i)
-        else:
-            self.shiftDown(i)
-
-
-    # Function to get value of
-    # the current maximum element
-    def getMax(self):
-        return self.H[0]
-
-
-    # Function to remove the element
-    # located at given index
-    def remove(self, i):
-        self.H[i] = (self.getMax()[0] + 1,0,"na")
-
-        # Shift the node to the root
-        # of the heap
-        self.shiftUp(i)
-
-        # Extract the node
-        return self.extractMax()
-
-
-    def swap(self,i, j):
-        temp = self.H[i]
-        self.H[i] = self.H[j]
-        self.H[j] = temp
 
 class Task:
     def __init__(self,name,deadline, bonus):
@@ -165,7 +104,7 @@ class UsesCase:
 
         taskPQueue = TaskHeapQueue()
         result   = []
-        #maxHeap  = []
+        maxHeap  = []
         # starting the iteration from the end
         for i in range(n - 1, -1, -1):
             # calculate slots between two deadlines
@@ -174,10 +113,10 @@ class UsesCase:
             else:
                 slots_available = self.tasks[i].deadline - self.tasks[i-1].deadline
 
-            taskPQueue.insert((-1*self.tasks[i].bonus, self.tasks[i].deadline, self.tasks[i].name))
-            while slots_available and taskPQueue.H:
+            taskPQueue.insert(maxHeap, (-1 * self.tasks[i].bonus, self.tasks[i].deadline, self.tasks[i].name))
+            while slots_available and maxHeap:
                 # get the task with max_profit
-                profit, deadline, job_id = taskPQueue.extractMax()
+                profit, deadline, job_id = taskPQueue.removeMin(maxHeap)
                 # reduce the slots
                 slots_available -= 1
 
