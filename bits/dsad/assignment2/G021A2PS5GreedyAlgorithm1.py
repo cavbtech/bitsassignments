@@ -142,13 +142,13 @@ def writeToFile(list_use_cases, output_file):
     taskOrderString     = ""
     for usecase in list_use_cases:
 
-        total_bonus = sum(list(map(lambda task: task.bonus, usecase.pickuptasks)))
+        total_bonus = sum(list(map(lambda task: task.bonus, usecase.assignedTasks)))
         initialString = initialString + f"{total_bonus} \n"
         resultCaseString    =  resultCaseString+"\n"+ \
             f"For the use case {usecase.use_case_name}, " \
             f" the maximum bonus earned is {total_bonus}"
 
-        orderString = "-->".join(list(map(lambda task: task.name, usecase.pickuptasks)))
+        orderString = "-->".join(list(map(lambda task: task.name, usecase.assignedTasks)))
         taskOrderString = taskOrderString + "\n" + \
                            f"For the use case {usecase.use_case_name}, " \
                            f" the tasks were scheduled in {orderString}"
