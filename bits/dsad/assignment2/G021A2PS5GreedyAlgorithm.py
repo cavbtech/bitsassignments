@@ -72,13 +72,17 @@ class Task:
         self.deadline = deadline
         self.bonus    = bonus
 
+    def __str__(self):
+        return f"name={self.name} , deadline={self.deadline} bonus={self.bonus}"
+
+
 class UsesCase:
     def __init__(self,use_case_name):
         self.use_case_name  = use_case_name
         self.tasks          = []
         self.assignedTasks    = []
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"use_case_name={self.use_case_name} , tasks={self.tasks} assignedTasks={self.assignedTasks}"
 
     def findMaxDeadlinedTask(self):
@@ -163,8 +167,14 @@ def merge_two_sorted_lists(leftTasks,rightTasks,orgTasks):
     i = j = k = 0
 
     while i < len_a and j < len_b:
-        if leftTasks[i].deadline <= rightTasks[j].deadline:
+        if (leftTasks[i].deadline <= rightTasks[j].deadline):
             orgTasks[k] = leftTasks[i]
+            # if(leftTasks[i].deadline==rightTasks[j].deadline):
+            #     print(f"leftTasks[i]={leftTasks[i]} and rightTasks[j]={rightTasks[j]}")
+            # # if(leftTasks[i].deadline < rightTasks[j].deadline and leftTasks[i].bonus < rightTasks[j].bonus):
+            # #     orgTasks[k] = leftTasks[i]
+            # # else:
+            # #     orgTasks[k] = rightTasks[j]
             i+=1
         else:
             orgTasks[k] = rightTasks[j]
