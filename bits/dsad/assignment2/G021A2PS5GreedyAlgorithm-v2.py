@@ -1,19 +1,135 @@
-def getAlphabet(i):
+class TaskHeapQueue:
     """
-    This method converts the input number to an alphabet.
-    If the input number is under 26 then it adds suffix with 0 and
-    if the input number is beyond 26 then it adds suffix as int(i/26)
-    :param i:
-    :return:
+    A simple implementation of priority queue
+    Can be implemented as static methods but this is better way of code separation
     """
-    alphabet_A = 65
-    alphabet_Z = 90
-    A_Z_Span       = (alphabet_Z-alphabet_A)+1 ## it is anyway 26
-    if(int(i/26)==0):
-        input_alphabet = ""+chr(alphabet_A + (i % A_Z_Span))
-    else:
-        input_alphabet = "" + chr(alphabet_A + (i % A_Z_Span)) + str(int(i / 26))
-    return input_alphabet
+    def shiftUp(self, heap, pos):
+        """
+        Traverse through smaller child till the last leaf node and compare the values
+        It is called while deleting any element and it internally calls shiftDown
+        :param heap:
+        :param pos:
+        :return:
+        """
+        endpos = len(heap)
+        startpos = pos
+        newitem = heap[pos]
+        childpos = 2 * pos + 1  # leftmost child position
+        while childpos < endpos:
+            # Set childpos to index of smaller child.
+            rightpos = childpos + 1
+            if rightpos < endpos and not heap[childpos] < heap[rightpos]:
+                childpos = rightpos
+            # Move the smaller child up.
+            heap[pos] = heap[childpos]
+            pos = childpos
+            childpos = 2 * pos + 1
+        heap[pos] = newitem
+        self.shiftDown(heap, startpos, pos)
+
+    def shiftDown(self, heap, startpos, pos):
+        """
+        It is called while adding any element within the heap
+        It is heapify algorithm where the parent node is compared to each child node till the last
+        leaf node and swap the elements based on the priority
+        :param heap:
+        :param startpos:
+        :param pos:
+        :return:
+        """
+        newitem = heap[pos]
+
+        while pos > startpos:
+            parentpos = (pos - 1) >> 1
+            parent = heap[parentpos]
+            if newitem < parent:
+                heap[pos] = parent
+                pos = parentpos
+                continue
+            break
+        heap[pos] = newitem
+
+    def insert(self, heap, item):
+        """Insert an element onto heap"""
+        heap.append(item)
+        self.shiftDown(heap, 0, len(heap) - 1)
+
+    def removeMin(self, heap):
+        """Remove the smallest element off the heap"""
+        poppedItem = heap.pop()
+        if heap:
+            returnitem = heap[0]
+            heap[0] = poppedItem
+            self.shiftUp(heap, 0)
+            return returnitem
+        return poppedItem
+
+
+
+class Task:
+    def __init__(self,name,deadline, bonus):
+        self.name     = name
+        self.deadline = deadline
+        self.bonus    = bonus
+
+    def __str__(self):
+        return f"name={self.name} , deadline={self.deadline} bonus={self.bonus}"
+
+
+class UsesCase:
+    def __init__(self,use_case_name):
+        self.use_case_name  = use_case_name
+        self.tasks          = []
+        self.assignedTasks    = []
+
+    def __str__(self):
+        return f"use_case_name={self.use_case_name} , tasks={self.tasks} assignedTasks={self.assignedTasks}"
+
+    def findMaxDeadlinedTask(self):
+        """
+        This method finds the max dead line for the usecase
+        :return:
+        """
+        maxDeadline = -1
+        for task in self.tasks:
+            if maxDeadline < task.deadline:
+                maxDeadline = task.deadline
+        return maxDeadline
+
+    def maximizeBonus(self):
+        """
+        maximizeBonus implemented using hash priority queue to get the complexity in n*logn complexity
+        :return:
+        """
+        n                   = len(self.tasks)
+        ## order the tasks by bonus /  deadline
+        merge_sort(self.tasks)
+
+
+        taskPQueue = TaskHeapQueue()
+        result   = []
+        maxHeap  = []
+        # starting the iteration from the end
+        for i in range(n - 1, -1, -1):
+            # calculate slots between two deadlines
+            if i == 0:
+                slots_available = self.tasks[i].deadline
+            else:
+                slots_available = self.tasks[i].deadline - self.tasks[i-1].deadline
+
+            taskPQueue.insert(maxHeap, (-1 * self.tasks[i].bonus, self.tasks[i].deadline, self.tasks[i].name))
+            while slots_available and maxHeap:
+                # get the task with max_profit
+                profit, deadline, job_id = taskPQueue.removeMin(maxHeap)
+                # reduce the slots
+                slots_available -= 1
+
+                # include the job in the result array
+                result.append(Task(job_id,deadline,profit*-1))
+
+        merge_sort(result)
+        self.assignedTasks = result
+
 
 def merge_sort(tasks):
     """
@@ -51,7 +167,7 @@ def merge_two_sorted_lists(leftTasks,rightTasks,orgTasks):
     i = j = k = 0
 
     while i < len_a and j < len_b:
-        if (leftTasks[i].bonus >= rightTasks[j].bonus):
+        if (leftTasks[i].deadline <= rightTasks[j].deadline):
             orgTasks[k] = leftTasks[i]
             # if(leftTasks[i].deadline==rightTasks[j].deadline):
             #     print(f"leftTasks[i]={leftTasks[i]} and rightTasks[j]={rightTasks[j]}")
@@ -75,63 +191,6 @@ def merge_two_sorted_lists(leftTasks,rightTasks,orgTasks):
         j+=1
         k+=1
 
-## Greedy algorithm to maximize the bonus by scheduling the problems
-class Task:
-    def __init__(self,name,deadline, bonus):
-        self.name     = name
-        self.deadline = deadline
-        self.bonus    = bonus
-
-    def __repr__(self):
-        return f"name={self.name} , deadline={self.deadline} bonus={self.bonus}"
-    def __str__(self):
-        return f"name={self.name} , deadline={self.deadline}, bonus={self.bonus}"
-
-
-class UsesCase:
-    def __init__(self,use_case_name):
-        self.use_case_name  = use_case_name
-        self.tasks          = []
-        self.assigned_tasks = []
-
-    def __repr__(self):
-        return f"use_case_name={self.use_case_name} , tasks={self.tasks}, assigned_tasks={self.assigned_tasks}"
-    def __str__(self):
-        return f"use_case_name={self.use_case_name} , tasks={self.tasks}, assigned_tasks={self.assigned_tasks}"
-
-    def findMaxDeadlinedTask(self):
-        """
-        This method finds the max dead line for the usecase
-        :return:
-        """
-        maxDeadline = -1
-        for task in self.tasks:
-            if maxDeadline < task.deadline:
-                maxDeadline = task.deadline
-        return maxDeadline
-
-    def maximizeBonus(self):
-        ## create an array which store the bonus that we will get each day
-        ## self.dailyBonus holds the total bonus for a usecase
-        self.assigned_tasks = [Task("na", 0, 0)] * (self.findMaxDeadlinedTask() + 1)
-        ## order the tasks by bonus
-        ## the complexity is n*log(n)
-        merge_sort(self.tasks)
-        for task in self.tasks:
-            i = task.deadline
-            # although this is a while loop, it is max of number of slots available. Hence it is
-            # not considered n^2.  so, it is actually constant time.  Overall complexity is
-            # n*log(n) + constant time(i.,e number of available slots).  Note: there is break applied
-            while i > 0:
-                if self.assigned_tasks[i].bonus == 0:
-                    #assign the task
-                    self.assigned_tasks[i] = task
-                    break
-                else:
-                    i -=1
-
-
-
 
 def createUseCase(usecase_counter, deadlines, bonusvalues):
     """
@@ -149,6 +208,9 @@ def createUseCase(usecase_counter, deadlines, bonusvalues):
 
     usecase = UsesCase(f"""Usecase:{usecase_counter}""")
     for i in range(0,len(deadlinesValues)):
+        ##TODO:Handle errors for other datatype. It should only accept integers
+        deadline    =0
+        bonus       =0
         try:
             deadline           = int(deadlinesValues[i].strip())
             bonus              = int(bonusValues[i].strip())
@@ -156,7 +218,7 @@ def createUseCase(usecase_counter, deadlines, bonusvalues):
                 raise ValueError
         except ValueError:
             raise RuntimeError(f" values deadline {deadlinesValues[i]} and bonus {bonusValues[i]} must be postive integers ")
-        task                = Task(f"""{getAlphabet(i)}""", deadline, bonus)
+        task                = Task(f"""Task:{i+1}""", deadline, bonus)
         usecase.tasks.append(task)
 
     return usecase
@@ -191,9 +253,7 @@ def readFile(fileName):
         else:
             line = lineraw.strip()
 
-        if(lineCounter==0 and line ==""):
-            raise RuntimeError(" Please end valid number of cases as +ve Integer")
-        if(line=="" and lineCounter > 1):
+        if(line==""):
             continue
 
         #Ignore the first line
@@ -224,27 +284,21 @@ def readFile(fileName):
     # return the usecases
     return list_use_cases
 
-
 def writeToFile(list_use_cases, output_file):
-    """
-    writeToFile writes the list of usecases and the tasks in which they assigned
-    :param list_use_cases:
-    :param output_file:
-    :return:
-    """
     initialString       = ""
     resultCaseString    = ""
     taskOrderString     = ""
 
     for usecase in list_use_cases:
-        total_bonus = sum(list(map(lambda task: task.bonus, usecase.assigned_tasks)))
+        total_bonus = sum(list(map(lambda task: task.bonus, usecase.assignedTasks)))
         initialString = initialString + f"{total_bonus} \n"
         resultCaseString    =  resultCaseString+"\n"+ \
             f"For the use case {usecase.use_case_name}, " \
             f" the maximum bonus earned is {total_bonus}"
 
-        orderString = "-->".join(list(filter(lambda task: task != "na",
-                                             map(lambda task: task.name, usecase.assigned_tasks))))
+
+        orderString = "-->".join(list(filter(lambda task: task!="na",
+                                             map(lambda task: task.name, usecase.assignedTasks))))
         taskOrderString = taskOrderString + "\n" + \
                            f"For the use case {usecase.use_case_name}, " \
                            f" the tasks were scheduled in {orderString}"
@@ -258,7 +312,5 @@ def writeToFile(list_use_cases, output_file):
     file.close()
 
 if __name__ == '__main__':
-    # for i in range(0,200):
-    #     print(f"i={i} and getAlphabet(i) = {getAlphabet(i)}")
     list_use_cases = readFile("inputPS5.txt")
     writeToFile(list_use_cases,"outputPS5.txt")
