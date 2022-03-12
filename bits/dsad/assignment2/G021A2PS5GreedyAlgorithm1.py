@@ -13,7 +13,7 @@ class UsesCase:
     def __init__(self,use_case_name):
         self.use_case_name  = use_case_name
         self.tasks          = []
-        self.pickuptasks    = []
+        self.assigned_tasks = []
 
     def __str__(self) -> str:
         return f"use_case_name={self.use_case_name} , tasks={self.tasks} dailyBonus={self.dailyBonus}"
@@ -30,27 +30,20 @@ class UsesCase:
         return maxDeadline
 
     def maximizeBonus(self):
-        """
-        maximizeBonus identifies the max of tasks that can be picked up
-        based on the max deadlines available. Thus max bonus can be calculated as sum of
-        all tasks that were picked up.
-        It first sorts all the tasks based on the weightage which is bonus / deadline
-        :return:
-        """
-
+        ## create an array which store the bonus that we will get each day
+        ## self.dailyBonus holds the total bonus for a usecase
+        self.assigned_tasks = [Task("na", 0, 0)] * (self.findMaxDeadlinedTask() + 1)
         ## order the tasks by bonus /  deadline
         self.tasks.sort(key=lambda task: (task.bonus), reverse=True)
-        # calcualte the max deadlined task
-        max_deadline = self.findMaxDeadlinedTask()
-        total_bonus  = 0
-        # remaining deadline is always inclusive of the last deadline hence it is max deadline + 1
-        remaining_deadline = max_deadline+1
-        i = 0
-        for i in range(0,max_deadline):
-            if remaining_deadline >0 :
-                self.pickuptasks.append(self.tasks[i])
-                total_bonus+=self.tasks[i].bonus
-                remaining_deadline-=self.tasks[i].deadline
+        for task in self.tasks:
+            i = task.deadline
+            while i > 0:
+                if self.assigned_tasks[i].bonus == 0:
+                    #assign the task
+                    self.assigned_tasks[i] = task
+                    break
+                else:
+                    i -=1
 
 
 
@@ -106,17 +99,28 @@ def readFile(fileName):
     list_use_cases    = []
     deadlines        = ""
     usecase_counter  = 0
+    expected_usecases= 0
     for lineraw in file:
         ## assuming the entered data prefixed with discription
         # i.e "No of use-cases: 2" ... the program needs only the value
         ## if the input doesnt have the description then pick only the value
         if(lineraw.find(":") >0 ):
-            line = lineraw.split(":")[1]
+            line = (lineraw.split(":")[1]).strip()
         else:
-            line = lineraw
+            line = lineraw.strip()
+
+        if(lineCounter==0 and line ==""):
+            raise RuntimeError(" Please end valid number of cases as +ve Integer")
+        if(line=="" and lineCounter > 1):
+            continue
 
         #Ignore the first line
         if lineCounter == 0:
+            if(line.isnumeric() and int(line)>0):
+                expected_usecases = int(line)
+            else:
+                error_str = f"No of use-cases must be an integer.  Given {lineraw}"
+                raise RuntimeError(error_str)
             lineCounter +=1
             continue
         # This is for deadlines
@@ -133,30 +137,29 @@ def readFile(fileName):
         lineCounter += 1
 
     file.close()
+    if(len(list_use_cases) != expected_usecases):
+        raise RuntimeError(f" Expected number of usecases are {expected_usecases} but actual are {len(list_use_cases)}")
     # return the usecases
     return list_use_cases
+
 
 def writeToFile(list_use_cases, output_file):
     initialString       = ""
     resultCaseString    = ""
     taskOrderString     = ""
-    for usecase in list_use_cases:
 
-        total_bonus = sum(list(map(lambda task: task.bonus, usecase.assignedTasks)))
+    for usecase in list_use_cases:
+        total_bonus = sum(list(map(lambda task: task.bonus, usecase.assigned_tasks)))
         initialString = initialString + f"{total_bonus} \n"
         resultCaseString    =  resultCaseString+"\n"+ \
             f"For the use case {usecase.use_case_name}, " \
             f" the maximum bonus earned is {total_bonus}"
 
-        orderString = "-->".join(list(map(lambda task: task.name, usecase.assignedTasks)))
+        orderString = "-->".join(list(filter(lambda task: task != "na",
+                                             map(lambda task: task.name, usecase.assigned_tasks))))
         taskOrderString = taskOrderString + "\n" + \
                            f"For the use case {usecase.use_case_name}, " \
                            f" the tasks were scheduled in {orderString}"
-
-    # print(initialString)
-    # print(f"Total number of test cases are  {len(list_use_cases)} \n")
-    # print(f"{resultCaseString}")
-    # print(f"{taskOrderString}")
 
     file = open(output_file, "w")
     file.write(initialString)
@@ -168,5 +171,4 @@ def writeToFile(list_use_cases, output_file):
 
 if __name__ == '__main__':
     list_use_cases = readFile("inputPS5.txt")
-    #print(f"list_use_cases = {list_use_cases}")
-    writeToFile(list_use_cases,"outputPS5.txt")
+    writeToFile(list_use_cases,"output1.txt")

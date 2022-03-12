@@ -296,7 +296,9 @@ def writeToFile(list_use_cases, output_file):
             f"For the use case {usecase.use_case_name}, " \
             f" the maximum bonus earned is {total_bonus}"
 
-        orderString = "-->".join(list(map(lambda task: task.name, usecase.assignedTasks)))
+
+        orderString = "-->".join(list(filter(lambda task: task!="na",
+                                             map(lambda task: task.name, usecase.assignedTasks))))
         taskOrderString = taskOrderString + "\n" + \
                            f"For the use case {usecase.use_case_name}, " \
                            f" the tasks were scheduled in {orderString}"
