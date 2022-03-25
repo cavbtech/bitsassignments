@@ -10,6 +10,9 @@ def flatenMap(clustdict):
              dictbig[point] = item[0]
     return dictbig
 
+def calculate_dist(point1,point2):
+    dist = ((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)**0.5
+    return dist
 
 
 def printData(iteration,points,distdict, clustdict):
@@ -33,16 +36,43 @@ def printData(iteration,points,distdict, clustdict):
 
 
 def findRandomCentrods(points,k):
-    centroids = []
+    centroids = ()
     for i in range(0,k):
-        centroids.append(random.randint(min(points),max(points)))
+        point = points[i]
+        centroids = centroids+((point),)
+    centroids = sorted(centroids)
+
     return centroids
 
 def findCentroids(clusdict):
-    centroids = []
+    centroids = ()
     for cluster_points in clusdict.values():
-        centroids.append(np.average(cluster_points))
+        counter = 0
+        x =0
+        y =0
+        for datavalues in cluster_points:
+            x = x + datavalues[0]
+            y = y + datavalues[1]
+            counter = counter+1
+        if(counter>0):
+            centroids = centroids+((round((x/counter),2),round((y/counter),2)),)
+    centroids = sorted(centroids)
     return centroids
+
+
+def checkForConvergence(centroids, prevcentroids):
+    epsilon = 0.5
+    isConverged = True;
+
+    for i in range(0,len(centroids)):
+        leftPoint = centroids[i]
+        righPoint = prevcentroids[i]
+
+        if((abs(round(leftPoint[0],2)-round(righPoint[0],2))<=epsilon
+               and abs(round(leftPoint[1],2)-round(righPoint[1],2)<=epsilon ))==False):
+            isConverged =  False
+            break;
+    return isConverged
 
 def doKmeans(points, k):
     centroids =findRandomCentrods(points,k)
@@ -57,10 +87,11 @@ def doKmeans(points, k):
         distdict = {}
         prevcentroids = centroids
         for i in range(0,len(points)):
+            ## default cluster assignment
             cluster     = centroids[0]
             prevDist    = 9999999999999
             for j in range(0,len(centroids)):
-                distance = abs(points[i] - centroids[j])
+                distance = calculate_dist(points[i],centroids[j])
                 if centroids[j] in distdict:
                     distdict[centroids[j]] = np.append(distdict[centroids[j]],[distance])
                 else:
@@ -70,21 +101,21 @@ def doKmeans(points, k):
                     prevDist = distance
             if cluster in clusdict:
                 values = clusdict[cluster]
-                values = np.append(values,[points[i]])
+                values = values+(points[i],)
                 clusdict[cluster] = values
             else:
-                clusdict[cluster] = [points[i]]
+                clusdict[cluster] = (points[i],)
 
         for centroid in centroids:
             if centroid in clusdict:
                 pass
             else:
-                clusdict[centroid] = [0]
+                clusdict[centroid] = (0,0)
 
             if centroid in distdict:
                 pass
             else:
-                distdict[centroid] = [0]
+                distdict[centroid] = np.array([0])
 
         clusdict    = OrderedDict(sorted(clusdict.items()))
         distdict    = OrderedDict(sorted(distdict.items()))
@@ -93,11 +124,18 @@ def doKmeans(points, k):
         centroids = findCentroids(clusdict)
         # print(f" new centroids = {centroids}")
         printData(iteration,points,distdict,clusdict)
-        isConverged = np.allclose(np.array(centroids),np.array(prevcentroids))
+
+
+        isConverged = checkForConvergence(centroids,prevcentroids)
+        print(f"current centroids={centroids} and prevcentroids={prevcentroids} "
+              f"and are they converged ? ={isConverged}")
         if(isConverged):
             break
 
 if __name__ == '__main__':
-    points = np.asarray([185,170,168,179,182,188,180,183])
+    points = (
+              (185,72),(170,56),(168,60),
+              (179,68),(182,82),(188,77),
+                       (180,70),(183,84),)
     print(f"""points={points}""")
-    doKmeans(points,3)
+    doKmeans(points,2)
