@@ -18,8 +18,29 @@ def min_dist_dict(distDict,min_xcol_name,min_ycol_name):
         distDict[rows][min_xcol_name+min_ycol_name] = xy_value[rows]
     return distDict
 
+def findMininDictFromBottomUp(distDict):
+    min_x_index =0
+    min_y_index =0
+    min_value    = 99999999
+    rowCount = 0;
+    for i in distDict:
+        row = distDict[i]
+        if(rowCount==0):
+            rowCount = rowCount+1
+            continue
+        colcount = 0
+        for j in row:
+            if(colcount<rowCount):
+                if(min_value > distDict[i][j]):
+                    min_value = distDict[i][j]
+                    min_x_index = rowCount
+                    min_y_index = colcount
+            colcount = colcount +1
+        rowCount = rowCount + 1
+    return (min_x_index,min_y_index,min_value)
 
 def dendo_min(distDict):
+    mindata = findMininDictFromBottomUp(distDict)
     print("-------------------------------------------------------")
     df = pd.DataFrame.from_dict(distDict)
     print(df)
@@ -29,12 +50,9 @@ def dendo_min(distDict):
     coldict = {}
     for i in range (0,len(df.columns)):
         coldict[i] = df.columns[i]
-    arr         = df.to_numpy()
-    (row,col)   = arr.shape
-    min = np.min(np.delete(arr[row-1],col-1))
-    index = np.where(arr[row-1]==min)
-    min_ycol_name = coldict[index[0][0]]
-    min_xcol_name = coldict[row-1]
+    min_xcol_name = coldict[mindata[0]]
+    min_ycol_name = coldict[mindata[1]]
+
     distDict      = min_dist_dict(distDict,min_xcol_name,min_ycol_name)
     dendo_min(distDict)
 
@@ -48,6 +66,8 @@ if __name__ == '__main__':
      'F': {'A': 5.83, 'B': 27.66, 'C': 26.25, 'D': 12.73, 'E': 7.81, 'F': 0.0, 'G': 10.63, 'H': 8.6},
      'G': {'A': 5.39, 'B': 17.2, 'C': 15.62, 'D': 2.24, 'E': 12.17, 'F': 10.63, 'G': 0.0, 'H': 14.32},
      'H': {'A': 12.17, 'B': 30.87, 'C': 28.3, 'D': 16.49, 'E': 2.24, 'F': 8.6, 'G': 14.32, 'H': 0.0}}
+    # mindata = findMininDictFromBottomUp(distDict)
+    # print(f"mindata={mindata}")
     dendo_min(distDict)
 
     pass

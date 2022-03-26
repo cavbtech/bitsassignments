@@ -16,7 +16,7 @@ if __name__ == '__main__':
             dist = math.dist(pointsDict[i],pointsDict[j])
             distDictJ[j] = round(dist,2)
         distDict[i] = distDictJ
-    print(f"{distDict}")
+    #print(f"{distDict}")
     df2 = dendo_min(distDict)
 
 

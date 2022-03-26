@@ -18,8 +18,29 @@ def max_dist_dict(distDict, min_xcol_name, min_ycol_name):
         distDict[rows][min_xcol_name+min_ycol_name] = xy_value[rows]
     return distDict
 
+def findMininDictFromBottomUp(distDict):
+    min_x_index =0
+    min_y_index =0
+    min_value    = 99999999
+    rowCount = 0;
+    for i in distDict:
+        row = distDict[i]
+        if(rowCount==0):
+            rowCount = rowCount+1
+            continue
+        colcount = 0
+        for j in row:
+            if(colcount<rowCount):
+                if(min_value > distDict[i][j]):
+                    min_value = distDict[i][j]
+                    min_x_index = rowCount
+                    min_y_index = colcount
+            colcount = colcount +1
+        rowCount = rowCount + 1
+    return (min_x_index,min_y_index,min_value)
 
 def dendo_max(distDict):
+    mindata = findMininDictFromBottomUp(distDict)
     print("-------------------------------------------------------")
     df = pd.DataFrame.from_dict(distDict)
     print(df)
@@ -29,13 +50,10 @@ def dendo_max(distDict):
     coldict = {}
     for i in range (0,len(df.columns)):
         coldict[i] = df.columns[i]
-    arr         = df.to_numpy()
-    (row,col)   = arr.shape
-    min = np.min(np.delete(arr[row-1],col-1))
-    index = np.where(arr[row-1]==min)
-    min_ycol_name = coldict[index[0][0]]
-    min_xcol_name = coldict[row-1]
-    distDict      = max_dist_dict(distDict, min_xcol_name, min_ycol_name)
+    min_xcol_name = coldict[mindata[0]]
+    min_ycol_name = coldict[mindata[1]]
+
+    distDict      = max_dist_dict(distDict,min_xcol_name,min_ycol_name)
     dendo_max(distDict)
 
 if __name__ == '__main__':
