@@ -1,0 +1,55 @@
+import numpy as np
+import pandas as pd
+def max_dist_dict(distDict, min_xcol_name, min_ycol_name):
+    x_value =  distDict[min_xcol_name]
+    y_value =  distDict[min_ycol_name]
+    xy_value = {}
+    for i in x_value:
+        xy_value[i]=max(x_value[i],y_value[i])
+    xy_value[min_xcol_name+min_ycol_name] = 0.0
+    distDict[min_xcol_name+min_ycol_name] = xy_value
+    distDict.pop(min_xcol_name)
+    distDict.pop(min_ycol_name)
+    for rows in distDict:
+        if min_ycol_name in distDict[rows]:
+            distDict[rows].pop(min_ycol_name)
+        if min_xcol_name in distDict[rows]:
+            distDict[rows].pop(min_xcol_name)
+        distDict[rows][min_xcol_name+min_ycol_name] = xy_value[rows]
+    return distDict
+
+
+def dendo_max(distDict):
+    print("-------------------------------------------------------")
+    df = pd.DataFrame.from_dict(distDict)
+    print(df)
+    if df.size ==1 :
+        return
+    # get the last row
+    coldict = {}
+    for i in range (0,len(df.columns)):
+        coldict[i] = df.columns[i]
+    arr         = df.to_numpy()
+    (row,col)   = arr.shape
+    min = np.min(np.delete(arr[row-1],col-1))
+    index = np.where(arr[row-1]==min)
+    min_ycol_name = coldict[index[0][0]]
+    min_xcol_name = coldict[row-1]
+    distDict      = max_dist_dict(distDict, min_xcol_name, min_ycol_name)
+    dendo_max(distDict)
+
+if __name__ == '__main__':
+    #In case the question comes in single dimension
+    distDict = {'A': {'A': 0.0, 'B': 21.93, 'C': 20.81, 'D': 7.21, 'E': 10.44, 'F': 5.83, 'G': 5.39, 'H': 12.17},
+     'B': {'A': 21.93, 'B': 0.0, 'C': 4.47, 'D': 15.0, 'E': 28.64, 'F': 27.66, 'G': 17.2, 'H': 30.87},
+     'C': {'A': 20.81, 'B': 4.47, 'C': 0.0, 'D': 13.6, 'E': 26.08, 'F': 26.25, 'G': 15.62, 'H': 28.3},
+     'D': {'A': 7.21, 'B': 15.0, 'C': 13.6, 'D': 0.0, 'E': 14.32, 'F': 12.73, 'G': 2.24, 'H': 16.49},
+     'E': {'A': 10.44, 'B': 28.64, 'C': 26.08, 'D': 14.32, 'E': 0.0, 'F': 7.81, 'G': 12.17, 'H': 2.24},
+     'F': {'A': 5.83, 'B': 27.66, 'C': 26.25, 'D': 12.73, 'E': 7.81, 'F': 0.0, 'G': 10.63, 'H': 8.6},
+     'G': {'A': 5.39, 'B': 17.2, 'C': 15.62, 'D': 2.24, 'E': 12.17, 'F': 10.63, 'G': 0.0, 'H': 14.32},
+     'H': {'A': 12.17, 'B': 30.87, 'C': 28.3, 'D': 16.49, 'E': 2.24, 'F': 8.6, 'G': 14.32, 'H': 0.0}}
+    dendo_max(distDict)
+
+    pass
+
+

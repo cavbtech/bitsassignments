@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 #https://www.mlstack.cafe/blog/k-means-clustering-interview-questions
 # function returns WSS score for k values from 1 to kmax
@@ -30,5 +31,10 @@ if __name__ == '__main__':
               # [185,170,168,179,182,188,180,183],
               # [72,56,60,68,82,77,70,84]
               ])
-    results = calculate_WSS(points, 3)
+    results = calculate_WSS(points, 4)
     print(f"""results = {results}""")
+    plt.plot( results, 'bx-')
+    plt.xlabel('Values of K')
+    plt.ylabel('Distortion')
+    plt.title('The Elbow Method using Distortion')
+    plt.show()
